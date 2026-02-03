@@ -1,0 +1,36 @@
+<h3 class="page-title">📦 Product List</h3>
+
+<a th:href="@{/products/create}" class="btn btn-primary mb-3">
+    ➕ Add New
+</a>
+
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Image</th>
+        <th>Category</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="p : ${products}">
+        <td th:text="${p.name}"></td>
+        <td th:text="${p.price}"></td>
+        <td><img th:src="@{'/images/' + ${p.image}}"></td>
+        <td>
+            <span class="badge-category bg-mobile"
+                  th:text="${p.category.name}">
+            </span>
+        </td>
+        <td>
+            <a th:href="@{'/products/edit/' + ${p.id}}"
+               class="btn btn-warning btn-sm">Edit</a>
+            <a th:href="@{'/products/delete/' + ${p.id}}"
+               class="btn btn-danger btn-sm">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
