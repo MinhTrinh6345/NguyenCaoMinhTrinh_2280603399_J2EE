@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiemtra Shop - Giỏ hàng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #667eea;
+            --primary-hover: #764ba2;
+            --secondary: #ff6b9d;
+            --success: #10b981;
+            --error: #ef4444;
+            --bg-color: #f8f9fa;
+            --nav-bg: #ffffff;
+            --text-main: #1a202c;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,249,250,0.95));
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+        }
+
+        .brand {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 32px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .cart-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 24px;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d1fae5, #c6f6d5);
+            border: 2px solid var(--success);
+            color: #065f46;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 14px;
+            animation: slideDown 0.5s ease-out;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cart-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 20px 24px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border-color);
+            background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .product-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            flex-shrink: 0;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quantity-control input {
+            width: 70px;
+            padding: 10px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            outline: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-control input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-update {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-update:active {
+            transform: translateY(0);
+        }
+
+        .subtotal {
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-remove {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: var(--error);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .btn-remove:hover {
+            background: linear-gradient(135deg, #fca5a5, #f87171);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .btn-remove:active {
+            transform: scale(0.95);
+        }
+
+        .cart-footer {
+            padding: 30px 24px;
+            background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 40px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .cart-total {
+            font-size: 16px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .cart-total strong {
+            display: block;
+            font-size: 32px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-top: 4px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+        }
+
+        .actions {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-continue {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            padding: 12px 24px;
+            border-radius: 10px;
+        }
+
+        .btn-continue:hover {
+            color: var(--primary);
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .btn-checkout {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            cursor: pointer;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-checkout:active {
+            transform: translateY(0);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+            border-radius: 16px;
+            border: 2px dashed var(--border-color);
+        }
+
+        .empty-cart svg {
+            width: 100px;
+            height: 100px;
+            color: var(--text-muted);
+            opacity: 0.3;
+            margin-bottom: 24px;
+        }
+
+        .empty-cart h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .empty-cart p {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .cart-footer {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+
+            .actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-continue,
+            .btn-checkout {
+                width: 100%;
+                justify-content: center;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th,
+            td {
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a th:href="@{/products/search}" class="brand">✨ Kiemtra Shop</a>
+            <div class="nav-links">
+                <a th:href="@{/products/search}">🛍️ Sản phẩm</a>
+                <a th:href="@{/cart}" class="active">
+                    🛒 Giỏ hàng
+                    <span class="cart-badge" th:if="${session.cart != null and !session.cart.isEmpty()}" th:text="${session.cart.size()}">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <div th:if="${successMessage}" class="alert-success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 12px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <h1 class="page-header">🛒 Giỏ Hàng Của Bạn</h1>
+
+        <div th:if="${cartItems == null or cartItems.isEmpty()}" class="cart-card empty-cart">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <h2>Giỏ hàng đang trống</h2>
+            <p>Bạn chưa chọn mua sản phẩm nào, hãy khám phá những sản phẩm tuyệt vời của chúng tôi!</p>
+            <a th:href="@{/products/search}" class="btn-checkout">🛍️ Khám Phá Sản Phẩm</a>
+        </div>
+
+        <div th:if="${cartItems != null and !cartItems.isEmpty()}" class="cart-wrapper">
+            <div class="cart-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Đơn giá</th>
+                            <th>Số lượng</th>
+                            <th>Tạm tính</th>
+                            <th style="text-align: right;">Hủy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${cartItems}">
+                            <td>
+                                <div class="product-info">
+                                    <div class="product-icon">📦</div>
+                                    <span th:text="${item.product.name}">Tên sản phẩm</span>
+                                </div>
+                            </td>
+                            <td th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')} + ' $'" style="color: var(--text-muted); font-weight: 600;">0.0</td>
+                            <td>
+                                <form th:action="@{/cart/update}" method="post" class="quantity-control" style="margin: 0;">
+                                    <input type="hidden" name="productId" th:value="${item.product.id}" />
+                                    <input type="number" name="quantity" th:value="${item.quantity}" min="1" required />
+                                    <button type="submit" class="btn-update">Cập nhật</button>
+                                </form>
+                            </td>
+                            <td class="subtotal" th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' $'">0.0</td>
+                            <td style="text-align: right;">
+                                <form th:action="@{/cart/remove}" method="post" style="margin: 0; display: inline-block;">
+                                    <input type="hidden" name="productId" th:value="${item.product.id}" />
+                                    <button type="submit" class="btn-remove" title="Xóa khỏi giỏ hàng">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="cart-footer">
+                    <div class="cart-total">
+                        Tổng thanh toán
+                        <strong th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' $'">0.0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a th:href="@{/products/search}" class="btn-continue">← Trở lại Cửa hàng</a>
+                <a th:href="@{/cart/checkout}" class="btn-checkout">Tiến hành Đặt hàng →</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

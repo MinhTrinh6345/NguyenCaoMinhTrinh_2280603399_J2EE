@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kiemtra Shop - Đặt hàng thành công</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #4f46e5; --bg-color: #f9fafb; --text-main: #111827; --text-muted: #6b7280; --card-bg: #ffffff; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
+        
+        .navbar { background-color: var(--card-bg); box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 16px 24px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+        .brand { font-size: 24px; font-weight: 800; color: var(--primary); text-decoration: none; }
+
+        .container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .success-card { background-color: var(--card-bg); padding: 50px 40px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); text-align: center; max-width: 500px; width: 100%; border-top: 8px solid #10b981; animation: slideUp 0.5s ease; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .icon-wrapper { width: 80px; height: 80px; background-color: #d1fae5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+        .icon-wrapper svg { width: 40px; height: 40px; color: #10b981; }
+
+        h2 { font-size: 28px; font-weight: 800; margin: 0 0 16px; color: #111827; letter-spacing: -0.02em; }
+        p { font-size: 16px; color: var(--text-muted); margin: 0 0 40px; line-height: 1.6; }
+
+        .btn { display: inline-block; padding: 14px 32px; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 8px; transition: background 0.2s, transform 0.1s; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:hover { background-color: #4338ca; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a th:href="@{/products/search}" class="brand">🚀 Kiemtra Shop</a>
+    </nav>
+
+    <div class="container">
+        <div class="success-card">
+            <div class="icon-wrapper">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h2>Tuyệt vời! Đặt hàng thành công!</h2>
+            <p>Đơn hàng của bạn đã được ghi nhận trên hệ thống Kiemtra.<br>Người bán sẽ sớm chuẩn bị hàng và giao cho bạn trong thời gian nhanh nhất.</p>
+            <a th:href="@{/products/search}" class="btn btn-primary">&larr; Trở lại Cửa hàng</a>
+        </div>
+    </div>
+
+</body>
+</html>
