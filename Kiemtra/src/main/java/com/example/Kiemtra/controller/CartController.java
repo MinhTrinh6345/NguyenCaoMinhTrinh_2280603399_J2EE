@@ -39,9 +39,7 @@ public class CartController {
             cart = new HashMap<>();
         }
 
-        Product product = productService.getAllProducts().stream()
-                .filter(p -> p.getId().equals(productId))
-                .findFirst().orElse(null);
+        Product product = productService.getProductById(productId);
 
         if (product != null) {
             if (cart.containsKey(productId)) {
@@ -127,25 +125,29 @@ public class CartController {
         Map<Long, CartItem> cart = (Map<Long, CartItem>) session.getAttribute("cart");
         if (cart != null && !cart.isEmpty()) {
             Order order = new Order();
-            order.setOrderDate(LocalDateTime.now());
             order.setCustomerName(customerName);
             order.setPhone(phone);
             order.setAddress(address);
             
             double total = 0;
-            List<OrderDetail> details = cart.values().stream().map(item -> {
-                return new OrderDetail(item.getProduct(), item.getQuantity(), item.getProduct().getPrice());
-            }).collect(Collectors.toList());
+            List<OrderDetail> details = new java.util.ArrayList<>();
             
-            for (OrderDetail detail : details) {
-                total += detail.getPrice() * detail.getQuantity();
+            for (CartItem item : cart.values()) {
+                OrderDetail detail = new OrderDetail();
+                detail.setProduct(item.getProduct());
+                detail.setQuantity(item.getQuantity());
+                detail.setPrice(item.getProduct().getPrice());
+                details.add(detail);
+                total += item.getSubtotal();
             }
             
             order.setDetails(details);
             order.setTotalAmount(total);
             
+            // Save order to database
             orderService.saveOrder(order);
             
+            // Clear cart after successful order
             session.removeAttribute("cart");
         }
         

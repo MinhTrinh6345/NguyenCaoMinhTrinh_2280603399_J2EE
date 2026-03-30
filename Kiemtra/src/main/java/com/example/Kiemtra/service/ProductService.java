@@ -1,6 +1,7 @@
 package com.example.Kiemtra.service;
 
 import com.example.Kiemtra.model.Product;
+import com.example.Kiemtra.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,36 +11,25 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
 
-    private final List<Product> products = new ArrayList<>();
+    private final ProductRepository productRepository;
 
-    public ProductService() {
-        products.add(new Product(1L, "Laptop Dell XPS 15", 1500.0, "High performance laptop", "Laptop"));
-        products.add(new Product(2L, "MacBook Pro 14", 2000.0, "Apple M2 Pro chip", "Laptop"));
-        products.add(new Product(3L, "iPhone 14 Pro Max", 1200.0, "Latest Apple smartphone", "Phone"));
-        products.add(new Product(4L, "Samsung Galaxy S23 Ultra", 1150.0, "Android flagship phone", "Phone"));
-        products.add(new Product(5L, "Sony WH-1000XM5", 400.0, "Noise cancelling headphones", "Audio"));
-        products.add(new Product(6L, "iPad Air 5", 600.0, "M1 chip tablet", "Tablet"));
-        products.add(new Product(7L, "Apple Watch Series 8", 399.0, "Smartwatch", "Accessory"));
-        products.add(new Product(8L, "Samsung Galaxy Tab S8", 700.0, "Premium Android tablet", "Tablet"));
-        products.add(new Product(9L, "Asus ROG Zephyrus G14", 1600.0, "Gaming laptop", "Laptop"));
-        products.add(new Product(10L, "Google Pixel 7 Pro", 899.0, "Excellent camera phone", "Phone"));
-        products.add(new Product(11L, "Lenovo ThinkPad X1 Carbon", 1800.0, "Business laptop", "Laptop"));
-        products.add(new Product(12L, "Nintendo Switch OLED", 350.0, "Hybrid gaming console", "Gaming"));
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
     public List<Product> getAllProducts() {
-        return products;
+        return productRepository.findAll();
     }
 
     public List<String> getAllCategories() {
-        return products.stream()
+        return productRepository.findAll().stream()
                 .map(Product::getCategory)
                 .distinct()
                 .collect(Collectors.toList());
     }
 
     public List<Product> searchProducts(String keyword, String category, String sort) {
-        List<Product> results = new ArrayList<>(products);
+        List<Product> results = new ArrayList<>(productRepository.findAll());
 
         // Filter by keyword
         if (keyword != null && !keyword.trim().isEmpty()) {
@@ -66,5 +56,13 @@ public class ProductService {
         }
 
         return results;
+    }
+
+    public Product getProductById(Long id) {
+        return productRepository.findById(id).orElse(null);
+    }
+
+    public Product saveProduct(Product product) {
+        return productRepository.save(product);
     }
 }
